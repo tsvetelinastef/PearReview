@@ -1,0 +1,63 @@
+﻿@page "/myCourses"
+
+@using PearReview.Data;
+@inject CoursesService CoursesSvc
+
+<h3>Courses</h3>
+
+<button class="btn btn-primary" @onclick="AddCourse">New Course</button>
+
+@if (allCourses == null)
+{
+        <p><em>Loading...</em></p>
+}
+else
+{
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var course in allCourses)
+            {
+                <tr>
+                    <td>🔵 @course.Id</td>
+                    <td>@course.Name</td>
+                    <td>@course.Description</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+}
+
+@code {
+    private IList<Course> allCourses { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FetchCourses();
+    }
+
+    public async void AddCourse()
+    {
+        Course course = new()
+            {
+                Name = "Blazor Server Course",
+                Description = "This course takes a deep dive into web app development with Blazor Server and ASP.NET Core",
+                CreatedOn = DateTime.Now
+            };
+
+        await CoursesSvc.AddCourse(course);
+
+        await FetchCourses();
+    }
+
+    private async Task FetchCourses()
+    {
+        allCourses = await CoursesSvc.GetCoursesAsync();
+    }
+}
