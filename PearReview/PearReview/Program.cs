@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using PearReview.Data;
 using Microsoft.AspNetCore.Identity;
+using PearReview.Areas.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +30,8 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 
 builder.Services.AddTransient<CoursesService>();
 
+builder.Services.AddScoped<TokenProvider>();
+
 var app = builder.Build();
 
 using (var context = app.Services.CreateScope().ServiceProvider.GetService<DataContext>())
@@ -56,7 +59,10 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 
+app.MapRazorPages();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
