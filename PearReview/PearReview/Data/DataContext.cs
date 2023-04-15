@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using PearReview.Areas.Identity.Data;
 
 namespace PearReview.Data
 {
-    public class DataContext : IdentityDbContext<IdentityUser>
+    public class DataContext : IdentityDbContext<AppUser>
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {

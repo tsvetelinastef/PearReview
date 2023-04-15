@@ -1,7 +1,8 @@
-using Microsoft.EntityFrameworkCore;
-using PearReview.Data;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using PearReview.Areas.Identity;
+using PearReview.Areas.Identity.Data;
+using PearReview.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +26,7 @@ if (connString != null)
 
 }
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<DataContext>();
 
 builder.Services.AddTransient<CoursesService>();

@@ -9,9 +9,9 @@ namespace PearReview.Data
 
         [Required]
         [MaxLength(150)]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
-        public string? Description { get; set; }
+		public string? Description { get; set; }
 
         [Required]
         public DateTime CreatedOn { get; set; } = DateTime.Now;

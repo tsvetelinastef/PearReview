@@ -7,7 +7,7 @@
 <AuthorizeView>
     <Authorized>
         <a href="Identity/Account/Manage/Index">
-            Hello, @context.User.Identity.Name
+            Hello, @context.User.Identity?.Name
         </a>
         <form action="/Identity/Account/Logout?returnUrl=%2F" method="post">
             <button class="nav-link btn btn-link" type="submit">Logout</button>

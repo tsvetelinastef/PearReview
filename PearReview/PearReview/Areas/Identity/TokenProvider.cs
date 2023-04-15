@@ -2,8 +2,8 @@
 {
     public class TokenProvider
     {
-        public string XsrfToken { get; set; }
+        public string XsrfToken { get; set; } = string.Empty;
 
-        public string RefreshToken { get; set; }
-    }
+        public string RefreshToken { get; set; } = string.Empty;
+	}
 }
