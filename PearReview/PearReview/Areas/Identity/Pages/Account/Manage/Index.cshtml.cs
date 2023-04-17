@@ -49,12 +49,10 @@ namespace PearReview.Areas.Identity.Pages.Account.Manage
         /// </summary>
         public class InputModel
         {
-            [Required]
             [DataType(DataType.Text)]
             [Display(Name = "First name")]
             public string FirstName { get; set; }
 
-            [Required]
             [DataType(DataType.Text)]
             [Display(Name = "Last name")]
             public string LastName { get; set; }

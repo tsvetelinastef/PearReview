@@ -13,6 +13,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using PearReview.Areas.Identity.Data;
 using System.Runtime.InteropServices;
+using System.Diagnostics.CodeAnalysis;
 
 namespace PearReview.Areas.Identity.Pages.Account
 {
@@ -72,11 +73,11 @@ namespace PearReview.Areas.Identity.Pages.Account
 
             [DataType(DataType.Text)]
             [Display(Name = "First name")]
-            public string? FirstName { get; set; }
+            public string FirstName { get; set; }
 
             [DataType(DataType.Text)]
             [Display(Name = "Last name")]
-            public string? LastName { get; set; }
+            public string LastName { get; set; }
 
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
@@ -89,7 +90,6 @@ namespace PearReview.Areas.Identity.Pages.Account
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
         }
-
 
         public async Task OnGetAsync(string returnUrl = null)
         {
@@ -104,6 +104,9 @@ namespace PearReview.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
+
+                user.FirstName = Input.FirstName;
+                user.LastName = Input.LastName;
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
