@@ -79,6 +79,18 @@ namespace PearReview.Areas.Identity.Pages.Account
             [Display(Name = "Last name")]
             public string LastName { get; set; }
 
+            [EnumDataType(typeof(UserRole))]
+            [Display(Name = "Role")]
+            public UserRole Role { get; set; } = UserRole.Teacher;
+
+            [DataType(DataType.Text)]
+            [Display(Name = "Group")]
+            public string Group { get; set; }
+
+            [DataType(DataType.Text)]
+            [Display(Name = "Faculty number")]
+            public string FacultyNumber { get; set; }
+
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
@@ -95,6 +107,7 @@ namespace PearReview.Areas.Identity.Pages.Account
         {
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            //Input = new InputModel();
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
@@ -107,6 +120,9 @@ namespace PearReview.Areas.Identity.Pages.Account
 
                 user.FirstName = Input.FirstName;
                 user.LastName = Input.LastName;
+                user.Role = Input.Role;
+                user.Group = Input.Group;
+                user.FacultyNumber = Input.FacultyNumber;
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);

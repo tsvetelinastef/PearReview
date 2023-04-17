@@ -26,11 +26,30 @@
                 <label asp-for="Input.LastName" class="form-label"></label>
             </div>
 
-            <div class="form-floating mb-3">
-                <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number."/>
-                <label asp-for="Input.PhoneNumber" class="form-label"></label>
-                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+            <div class="mb-3">
+                <div class="form-check form-check-inline">
+                    <p class="mr-2">I'm using Pear Review as a:</p>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input asp-for="Input.Role" class="btn-check" type="radio" autocomplete="off" value="0">
+                    <label asp-for="Input.Role" class="btn btn-outline-primary">Teacher</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input asp-for="Input.Role" class="btn-check" type="radio" autocomplete="off" value="1">
+                    <label asp-for="Input.Role" class="btn btn-outline-primary">Student</label>
+                </div>
             </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Group" class="form-control" placeholder="ex. 43"/>
+                <label asp-for="Input.Group" class="form-label"></label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.FacultyNumber" class="form-control" placeholder="ex. 121220183"/>
+                <label asp-for="Input.FacultyNumber" class="form-label"></label>
+            </div>
+
             <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
         </form>
     </div>

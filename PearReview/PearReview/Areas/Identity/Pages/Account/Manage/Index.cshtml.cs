@@ -57,6 +57,18 @@ namespace PearReview.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Last name")]
             public string LastName { get; set; }
 
+            [EnumDataType(typeof(UserRole))]
+            [Display(Name = "Role")]
+            public UserRole Role { get; set; } = UserRole.Teacher;
+
+            [DataType(DataType.Text)]
+            [Display(Name = "Group")]
+            public string Group { get; set; }
+
+            [DataType(DataType.Text)]
+            [Display(Name = "Faculty number")]
+            public string FacultyNumber { get; set; }
+
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
@@ -73,6 +85,9 @@ namespace PearReview.Areas.Identity.Pages.Account.Manage
             {
                 FirstName = user.FirstName,
                 LastName = user.LastName,
+                Role = user.Role,
+                Group = user.Group,
+                FacultyNumber = user.FacultyNumber,
                 PhoneNumber = phoneNumber
             };
         }
@@ -122,6 +137,21 @@ namespace PearReview.Areas.Identity.Pages.Account.Manage
             if (Input.LastName != user.LastName)
             {
                 user.LastName = Input.LastName;
+            }
+
+            if (Input.Role != user.Role)
+            {
+                user.Role = Input.Role;
+            }
+
+            if (Input.Group != user.Group)
+            {
+                user.Group = Input.Group;
+            }
+
+            if (Input.FacultyNumber != user.FacultyNumber)
+            {
+                user.FacultyNumber = Input.FacultyNumber;
             }
 
             await _userManager.UpdateAsync(user);
