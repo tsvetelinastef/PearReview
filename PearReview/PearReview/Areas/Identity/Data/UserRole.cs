@@ -2,7 +2,7 @@
 {
     public enum UserRole
     {
-        Teacher,
-        Student
+        Teacher = 0,
+        Student = 1
     }
 }
