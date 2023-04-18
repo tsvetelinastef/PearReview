@@ -1,8 +1,13 @@
 ﻿@page "/myCourses"
 @attribute [Authorize]
 
-@using PearReview.Data;
+@using PearReview.Areas.Courses.Data;
+@using PearReview.Areas.Courses.Services;
+@using PearReview.Areas.Identity.Data;
+@using PearReview.Areas.Identity.Services;
+
 @inject CoursesService CoursesSvc
+@inject UsersService UsersSvc
 
 <h3>Courses</h3>
 
@@ -19,6 +24,8 @@ else
                 <tr>
                     <th>Id</th>
                     <th>Name</th>
+                    <th>Start Date</th>
+                    <th>Teacher</th>
                     <th>Description</th>
                 </tr>
             </thead>
@@ -28,6 +35,17 @@ else
                 <tr>
                     <td>🔵 @course.Id</td>
                     <td>@course.Name</td>
+                    <td>@course.StartDate.ToLocalTime().Date</td>
+                    <td>
+                        @if (course.Teacher.FirstName != null && course.Teacher.LastName != null)
+                        {
+                            @(@course.Teacher.FirstName + " " + @course.Teacher.LastName)
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    </td>
                     <td>@course.Description</td>
                 </tr>
             }
@@ -43,12 +61,16 @@ else
         await FetchCourses();
     }
 
-    public async void AddCourse()
+    public async Task AddCourse()
     {
+        List<AppUser> users = await UsersSvc.GetUsersAsync();
+
         Course course = new()
             {
                 Name = "Blazor Server Course",
                 Description = "This course takes a deep dive into web app development with Blazor Server and ASP.NET Core",
+                StartDate = DateTime.Now.AddDays(5),
+                Teacher = users[1],
                 CreatedOn = DateTime.Now
             };
 
@@ -59,6 +81,6 @@ else
 
     private async Task FetchCourses()
     {
-        allCourses = await CoursesSvc.GetCoursesAsync();
+        allCourses = await CoursesSvc.GetCoursesWithUsersAsync();
     }
 }

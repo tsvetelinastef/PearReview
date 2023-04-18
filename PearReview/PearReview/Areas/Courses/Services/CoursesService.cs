@@ -1,6 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PearReview.Areas.Courses.Data;
+using PearReview.Areas.Identity.Data;
+using PearReview.Data;
 
-namespace PearReview.Data
+namespace PearReview.Areas.Courses.Services
 {
     public class CoursesService
     {
@@ -18,6 +21,17 @@ namespace PearReview.Data
                 return Task.FromResult(new List<Course>());
             }
             return _context.Courses.ToListAsync();
+        }
+
+        public Task<List<Course>> GetCoursesWithUsersAsync()
+        {
+            if (_context.Courses == null)
+            {
+                return Task.FromResult(new List<Course>());
+            }
+            return _context.Courses
+                .Include(c => c.Teacher)
+                .ToListAsync();
         }
 
         public Task AddCourse(Course course)
