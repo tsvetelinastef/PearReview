@@ -26,24 +26,18 @@
             </div>
 
             <div class="mb-3">
-                <div class="form-check form-check-inline">
-                    <p class="mr-2">I'm using Pear Review as a:</p>
+                <div class="form-check">
+                    <p class="mr-2">I'm using Pear Review as a: *</p>
                 </div>
-@*                @foreach (var role in System.Enum.GetValues(typeof(UserRole)).OfType<UserRole>())
+                @foreach (var role in System.Enum.GetValues(typeof(UserRole)).OfType<UserRole>())
                 {
                     <div class="form-check form-check-inline">
-                        <input asp-for="Input.Role" class="btn-check" type="radio" autocomplete="off" value="@((int)@role)" checked="@(role == Model.Input.Role)">
-                        <label asp-for="Input.Role" class="btn btn-outline-primary">@role.ToString()</label>
+                        @Html.RadioButtonFor(model => model.Input.Role, role) @*, new { @class = "form-check-input" })*@
+                        <label asp-for="Input.Role" class="form-check-label">@role.ToString()</label>
                     </div>
-                }*@
-                <div class="form-check form-check-inline">
-                    <input asp-for="Input.Role" class="btn-check" type="radio" autocomplete="off" value="0" checked>
-                    <label asp-for="Input.Role" class="btn btn-outline-primary">Teacher</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input asp-for="Input.Role" class="btn-check" type="radio" autocomplete="off" value="1">
-                    <label asp-for="Input.Role" class="btn btn-outline-primary">Student</label>
-                </div>
+                }
+                <div></div>
+                <span asp-validation-for="Input.Role" class="text-danger"></span>
             </div>
 
             <div class="form-floating mb-3">

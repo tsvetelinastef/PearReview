@@ -1,13 +1,17 @@
 ﻿@page "/myCourses"
 @attribute [Authorize]
 
+@using Microsoft.AspNetCore.Identity;
 @using PearReview.Areas.Courses.Data;
 @using PearReview.Areas.Courses.Services;
 @using PearReview.Areas.Identity.Data;
 @using PearReview.Areas.Identity.Services;
+@using System.Security.Claims;
 
 @inject CoursesService CoursesSvc
 @inject UsersService UsersSvc
+@inject AuthenticationStateProvider AuthProv
+@inject UserManager<AppUser> UserManager
 
 <h3>Courses</h3>
 
@@ -54,23 +58,39 @@ else
 }
 
 @code {
+    private AuthenticationState authState;
+    private AppUser? currentUser;
+
     private IList<Course> allCourses { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
+        authState = await AuthProv.GetAuthenticationStateAsync();
+        string? userId = authState.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (userId != null)
+        {
+            currentUser = await UserManager.FindByIdAsync(userId);
+        }
+
         await FetchCourses();
     }
 
     public async Task AddCourse()
     {
-        List<AppUser> users = await UsersSvc.GetUsersAsync();
+        AppUser teacher = currentUser!;
+        if (teacher == null)
+        {
+            List<AppUser> users = await UsersSvc.GetUsersAsync();
+            teacher = users[1];
+        }
 
         Course course = new()
             {
                 Name = "Blazor Server Course",
                 Description = "This course takes a deep dive into web app development with Blazor Server and ASP.NET Core",
                 StartDate = DateTime.Now.AddDays(5),
-                Teacher = users[1],
+                Teacher = teacher,
                 CreatedOn = DateTime.Now
             };
 

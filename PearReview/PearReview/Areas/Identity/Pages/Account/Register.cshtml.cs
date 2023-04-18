@@ -79,9 +79,10 @@ namespace PearReview.Areas.Identity.Pages.Account
             [Display(Name = "Last name")]
             public string LastName { get; set; }
 
+            [Required]
             [EnumDataType(typeof(UserRole))]
             [Display(Name = "Role")]
-            public UserRole Role { get; set; } = UserRole.Teacher;
+            public UserRole Role { get; set; }
 
             [DataType(DataType.Text)]
             [Display(Name = "Group")]
