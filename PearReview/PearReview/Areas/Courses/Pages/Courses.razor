@@ -1,4 +1,4 @@
-﻿@page "/myCourses"
+﻿@page "/Courses"
 @attribute [Authorize]
 
 @using Microsoft.AspNetCore.Identity;
@@ -10,12 +10,12 @@
 
 @inject CoursesService CoursesSvc
 @inject UsersService UsersSvc
-@inject AuthenticationStateProvider AuthProv
-@inject UserManager<AppUser> UserManager
+@inject CurrentUserService CurrentUserSvc
+@inject NavigationManager Navigation
 
 <h3>Courses</h3>
 
-<button class="btn btn-primary" @onclick="AddCourse">New Course</button>
+<button class="btn btn-primary" @onclick="GoToCreateCourse">New Course</button>
 
 @if (allCourses == null)
 {
@@ -58,20 +58,13 @@ else
 }
 
 @code {
-    private AuthenticationState authState;
     private AppUser? currentUser;
 
     private IList<Course> allCourses { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
-        authState = await AuthProv.GetAuthenticationStateAsync();
-        string? userId = authState.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        if (userId != null)
-        {
-            currentUser = await UserManager.FindByIdAsync(userId);
-        }
+        currentUser = await CurrentUserSvc.GetCurrentUser();
 
         await FetchCourses();
     }
@@ -102,5 +95,10 @@ else
     private async Task FetchCourses()
     {
         allCourses = await CoursesSvc.GetCoursesWithUsersAsync();
+    }
+
+    private void GoToCreateCourse()
+    {
+        Navigation.NavigateTo($"Courses/Create");
     }
 }

@@ -14,30 +14,30 @@ namespace PearReview.Areas.Courses.Services
             _context = context;
         }
 
-        public Task<List<Course>> GetCoursesAsync()
+        public async Task<List<Course>> GetCoursesAsync()
         {
             if (_context.Courses == null)
             {
-                return Task.FromResult(new List<Course>());
+                return new List<Course>();
             }
-            return _context.Courses.ToListAsync();
+            return await _context.Courses.ToListAsync();
         }
 
-        public Task<List<Course>> GetCoursesWithUsersAsync()
+        public async Task<List<Course>> GetCoursesWithUsersAsync()
         {
             if (_context.Courses == null)
             {
-                return Task.FromResult(new List<Course>());
+                return new List<Course>();
             }
-            return _context.Courses
+            return await _context.Courses
                 .Include(c => c.Teacher)
                 .ToListAsync();
         }
 
-        public Task AddCourse(Course course)
+        public async Task<int> AddCourse(Course course)
         {
             _context.Courses.Add(course);
-            return _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync();
         }
     }
 }

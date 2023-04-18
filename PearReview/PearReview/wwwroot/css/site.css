@@ -72,3 +72,18 @@ a, .btn-link {
     height 40px;
     margin-right: 10px;
 }
+
+.callout {
+    padding: 1.25rem;
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+    color: #055160;
+    background-color: #cff4fc;
+    border-left: 0.25rem solid #9eeaf9;
+}
+
+.callout-danger {
+    color: #58151c;
+    background-color: #f8d7da;
+    border-left-color: #f1aeb5;
+}

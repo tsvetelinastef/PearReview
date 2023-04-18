@@ -32,6 +32,7 @@ builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireCo
     .AddEntityFrameworkStores<DataContext>();
 
 // Scoped or Transient?
+builder.Services.AddScoped<CurrentUserService>();
 builder.Services.AddScoped<UsersService>();
 builder.Services.AddScoped<CoursesService>();
 

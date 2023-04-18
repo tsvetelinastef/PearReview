@@ -19,7 +19,7 @@ namespace PearReview.Areas.Courses.Data
         public AppUser Teacher { get; set; }
 
         [Required]
-        public DateTime StartDate { get; set; }
+        public DateTime StartDate { get; set; } = DateTime.Now;
 
         [Required]
         public DateTime CreatedOn { get; set; }
