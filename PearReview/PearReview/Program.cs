@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PearReview.Areas.Courses.Services;
 using PearReview.Areas.Identity;
@@ -32,14 +33,15 @@ builder.Services.AddDefaultIdentity<AppUser>(
         options.SignIn.RequireConfirmedAccount = true;
         options.User.RequireUniqueEmail = true;
     })
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>();
     // Use a custom UserStore that uses the DbContextFactory and creates a new DbContext for reach request.
     // This avoids getting the following error since the same DbContext instance is not used by mutliple threads:
     // "InvalidOperationException: A second operation started on this context before a previous operation completed. This is usually caused by different threads using the same instance of DbContext.'
     //.AddUserStore<AppUserStore>();
 
-// Transient = new instance every time one is needed
-// Scoped = new instance per request but in Blazor there's only one request - the one that establishes the WebSockets connection
+// Transient = new instance every time one is requested
+// Scoped = new instance per client request but in Blazor there's only one request - the one that establishes the WebSockets connection
 // This means that scope services will live as long as the connection lives which is until a manual reload (manual uri change is a reload)
 // Scoped or Transient?
 builder.Services.AddScoped<CurrentUserService>();
