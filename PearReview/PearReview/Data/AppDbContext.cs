@@ -24,6 +24,15 @@ namespace PearReview.Data
                 .WithMany() // User has many Courses - no navigational property
                 .IsRequired();
 
+            // Set Identity table names
+            builder.Entity<AppUser>().ToTable("Users");
+            builder.Entity<IdentityRole>().ToTable("Roles");
+            builder.Entity<IdentityUserClaim<string>>().ToTable("UserClaims");
+            builder.Entity<IdentityUserToken<string>>().ToTable("UserTokens");
+            builder.Entity<IdentityUserLogin<string>>().ToTable("UserLogins");
+            builder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaims");
+            builder.Entity<IdentityUserRole<string>>().ToTable("UsersRoles");
+
             builder.Entity<IdentityRole>().HasData(
                 new IdentityRole { Id = "902f24fa-879f-4263-875d-6f7599665c75", Name = "Admin", NormalizedName = "ADMIN", ConcurrencyStamp = "11931df8-9549-4bd8-87db-63e4b943de08" },
                 new IdentityRole { Id = "233e6dbb-5925-4c23-a86c-18d501c53cde", Name = "Teacher", NormalizedName = "TEACHER", ConcurrencyStamp = "234d8db3-b25d-4b6e-bdec-96b944ae87f8" },
