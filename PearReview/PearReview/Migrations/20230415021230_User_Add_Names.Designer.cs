@@ -11,7 +11,7 @@ using PearReview.Data;
 
 namespace PearReview.Migrations
 {
-    [DbContext(typeof(DataContext))]
+    [DbContext(typeof(AppDbContext))]
     [Migration("20230415021230_User_Add_Names")]
     partial class User_Add_Names
     {

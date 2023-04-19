@@ -10,7 +10,7 @@ using PearReview.Data;
 
 namespace PearReview.Migrations
 {
-    [DbContext(typeof(DataContext))]
+    [DbContext(typeof(AppDbContext))]
     [Migration("20230405175631_InitialCreate")]
     partial class InitialCreate
     {

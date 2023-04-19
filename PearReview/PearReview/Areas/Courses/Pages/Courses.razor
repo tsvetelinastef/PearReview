@@ -15,7 +15,9 @@
 
 <h3>Courses</h3>
 
-<button class="btn btn-primary" @onclick="GoToCreateCourse">New Course</button>
+<RoleShow RequiredRole="@UserRole.Teacher">
+    <button class="btn btn-primary" @onclick="GoToCreateCourse">New Course</button>
+</RoleShow>
 
 @if (allCourses == null)
 {
@@ -64,9 +66,14 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        currentUser = await CurrentUserSvc.GetCurrentUser();
+        if (currentUser == null)
+        {
+            currentUser = (await CurrentUserSvc.GetCurrentUser())!;
+        }
 
         await FetchCourses();
+
+        await base.OnInitializedAsync();
     }
 
     public async Task AddCourse()
@@ -99,6 +106,6 @@ else
 
     private void GoToCreateCourse()
     {
-        Navigation.NavigateTo($"Courses/Create");
+        Navigation.NavigateTo("Courses/Create");
     }
 }

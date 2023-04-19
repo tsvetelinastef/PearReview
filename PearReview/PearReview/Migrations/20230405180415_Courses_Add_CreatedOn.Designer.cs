@@ -11,7 +11,7 @@ using PearReview.Data;
 
 namespace PearReview.Migrations
 {
-    [DbContext(typeof(DataContext))]
+    [DbContext(typeof(AppDbContext))]
     [Migration("20230405180415_Courses_Add_CreatedOn")]
     partial class Courses_Add_CreatedOn
     {

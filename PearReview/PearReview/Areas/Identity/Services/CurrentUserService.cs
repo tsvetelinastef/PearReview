@@ -1,32 +1,31 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.CodeAnalysis.FlowAnalysis.DataFlow;
-using Microsoft.EntityFrameworkCore;
 using PearReview.Areas.Identity.Data;
-using PearReview.Data;
 using System.Security.Claims;
 
 namespace PearReview.Areas.Identity.Services
 {
     public class CurrentUserService
     {
-        private AuthenticationStateProvider _authProv;
-        private UserManager<AppUser> _userManager;
+        private AuthenticationStateProvider authProv;
+        private UserManager<AppUser> userMngr;
 
-        public CurrentUserService(AuthenticationStateProvider authProv, UserManager<AppUser> userManager)
+        private AppUser? currentUser;
+
+        public CurrentUserService(AuthenticationStateProvider authProvider, UserManager<AppUser> userManager)
         {
-            if (authProv == null || userManager == null)
+            if (authProvider == null || userManager == null)
             {
                 throw new NullReferenceException();
             }
 
-            _authProv = authProv;
-            _userManager = userManager;
+            authProv = authProvider;
+            userMngr = userManager;
         }
 
         public async Task<AuthenticationState> GetAuthState()
         {
-            return await _authProv.GetAuthenticationStateAsync();
+            return await authProv.GetAuthenticationStateAsync();
         }
 
         public async Task<AppUser?> GetCurrentUser()
@@ -36,18 +35,29 @@ namespace PearReview.Areas.Identity.Services
             if (authState.User.Identity == null || !authState.User.Identity.IsAuthenticated)
             {
                 // Not logged in
+                ClearCurrentUser();
                 return null;
             }
 
+            if (currentUser != null)
+            {
+                // Cache the user so multiple successive requests are more performant
+                return currentUser;
+            }
+
             string? userId = authState.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            AppUser? currentUser = null;
 
             if (userId != null)
             {
-                currentUser = await _userManager.FindByIdAsync(userId);
+                currentUser = await userMngr.FindByIdAsync(userId);
             }
 
             return currentUser;
+        }
+
+        public void ClearCurrentUser()
+        {
+            currentUser = null;
         }
     }
 }

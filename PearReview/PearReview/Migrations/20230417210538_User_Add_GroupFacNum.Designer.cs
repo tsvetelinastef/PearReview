@@ -11,7 +11,7 @@ using PearReview.Data;
 
 namespace PearReview.Migrations
 {
-    [DbContext(typeof(DataContext))]
+    [DbContext(typeof(AppDbContext))]
     [Migration("20230417210538_User_Add_GroupFacNum")]
     partial class User_Add_GroupFacNum
     {

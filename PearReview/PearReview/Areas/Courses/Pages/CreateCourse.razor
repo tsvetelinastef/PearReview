@@ -7,6 +7,8 @@
 @inject CurrentUserService CurrentUserSvc
 @inject CoursesService CoursesSvc
 
+<RoleRedirect RequiredRole="@UserRole.Teacher" />
+
 <h3>Create a Course</h3>
 
 @if (isDone && isSuccess)
@@ -53,7 +55,7 @@ else if (isDone && !isSuccess)
 </EditForm>
 
 @code {
-    private Course course;
+    private Course course = new Course();
     private AppUser currentUser;
 
     private bool isProcessing = false;
@@ -64,14 +66,13 @@ else if (isDone && !isSuccess)
     {
         currentUser = (await CurrentUserSvc.GetCurrentUser())!;
 
-        course = new Course();
         course.Teacher = currentUser;
+
+        await base.OnInitializedAsync();
     }
 
     private async Task HandleValidSubmit()
     {
-        AppUser currentUser = (await CurrentUserSvc.GetCurrentUser())!;
-        course.Teacher = currentUser;
         course.CreatedOn = DateTime.Now;
 
         isProcessing = true;
