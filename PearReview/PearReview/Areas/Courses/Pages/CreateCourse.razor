@@ -1,5 +1,5 @@
 ﻿@page "/Courses/Create"
-@attribute [Authorize]
+@attribute [Authorize(Roles = "Admin,Teacher")]
 
 @using PearReview.Areas.Courses.Data;
 @using PearReview.Areas.Courses.Services;
@@ -7,7 +7,7 @@
 @inject CurrentUserService CurrentUserSvc
 @inject CoursesService CoursesSvc
 
-<RoleRedirect RequiredRole="@UserRole.Teacher" />
+@*<RoleRedirect RequiredRole="@UserRole.Teacher" />*@
 
 <h3>Create a Course</h3>
 

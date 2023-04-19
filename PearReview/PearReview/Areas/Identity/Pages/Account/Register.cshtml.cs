@@ -119,7 +119,6 @@ namespace PearReview.Areas.Identity.Pages.Account
 
                 user.FirstName = Input.FirstName;
                 user.LastName = Input.LastName;
-                user.Role = Input.Role;
                 user.Group = Input.Group;
                 user.FacultyNumber = Input.FacultyNumber;
 
@@ -130,6 +129,17 @@ namespace PearReview.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
+
+                    // Assign the chosen role (Teacher/Student)
+                    IdentityResult res = await _userManager.AddToRoleAsync(user, Input.Role.ToString());
+                    if (res.Succeeded)
+                    {
+                        _logger.LogInformation($"Role {Input.Role} assigned to user.");
+                    }
+                    else
+                    {
+                        _logger.LogInformation($"Role {Input.Role} couldn't be assigned to user.");
+                    }
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

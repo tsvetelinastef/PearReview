@@ -15,9 +15,10 @@
 
 <h3>Courses</h3>
 
-<RoleShow RequiredRole="@UserRole.Teacher">
+@*<RoleShow RequiredRole="@UserRole.Teacher" >*@
+<AuthorizeView Roles="Admin,Teacher">
     <button class="btn btn-primary" @onclick="GoToCreateCourse">New Course</button>
-</RoleShow>
+</AuthorizeView>
 
 @if (allCourses == null)
 {

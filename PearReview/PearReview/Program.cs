@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PearReview.Areas.Courses.Services;
@@ -39,6 +40,8 @@ builder.Services.AddDefaultIdentity<AppUser>(
     // This avoids getting the following error since the same DbContext instance is not used by mutliple threads:
     // "InvalidOperationException: A second operation started on this context before a previous operation completed. This is usually caused by different threads using the same instance of DbContext.'
     //.AddUserStore<AppUserStore>();
+
+//builder.Services.AddScoped<AuthenticationStateProvider, AppAuthStateProvider<AppUser>>();
 
 // Transient = new instance every time one is requested
 // Scoped = new instance per client request but in Blazor there's only one request - the one that establishes the WebSockets connection

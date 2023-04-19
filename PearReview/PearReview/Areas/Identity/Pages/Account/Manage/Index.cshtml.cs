@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -14,13 +15,16 @@ namespace PearReview.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly AuthenticationStateProvider _authProv;
 
         public IndexModel(
             UserManager<AppUser> userManager,
-            SignInManager<AppUser> signInManager)
+            SignInManager<AppUser> signInManager,
+            AuthenticationStateProvider authProv)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _authProv = authProv;
         }
 
         /// <summary>
@@ -59,7 +63,7 @@ namespace PearReview.Areas.Identity.Pages.Account.Manage
 
             [EnumDataType(typeof(UserRole))]
             [Display(Name = "Role")]
-            public UserRole Role { get; set; } = UserRole.Teacher;
+            public UserRole Role { get; set; } = UserRole.None;
 
             [DataType(DataType.Text)]
             [Display(Name = "Group")]
@@ -85,11 +89,26 @@ namespace PearReview.Areas.Identity.Pages.Account.Manage
             {
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                Role = user.Role,
                 Group = user.Group,
                 FacultyNumber = user.FacultyNumber,
                 PhoneNumber = phoneNumber
             };
+
+            IList<string> roles = await _userManager.GetRolesAsync(user);
+
+            foreach (var role in roles)
+            {
+                if (role == UserRole.Teacher.ToString())
+                {
+                    Input.Role = UserRole.Teacher;
+                    break;
+                }
+                else if (role == UserRole.Student.ToString())
+                {
+                    Input.Role = UserRole.Student;
+                    break;
+                }
+            }         
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -152,6 +171,35 @@ namespace PearReview.Areas.Identity.Pages.Account.Manage
             if (Input.FacultyNumber != user.FacultyNumber)
             {
                 user.FacultyNumber = Input.FacultyNumber;
+            }
+
+            // Handle role edit
+            IList<string> roles = await _userManager.GetRolesAsync(user);
+
+            IdentityResult res = null;
+            foreach (var role in roles)
+            {
+                if (role != Input.Role.ToString())
+                {
+                    if (Input.Role == UserRole.Teacher)
+                    {
+                        await _userManager.RemoveFromRoleAsync(user, UserRole.Student.ToString());
+                        await _userManager.AddToRoleAsync(user, Input.Role.ToString());
+                        break;
+                    }
+                    else if (Input.Role == UserRole.Student)
+                    {
+                        await _userManager.RemoveFromRoleAsync(user, UserRole.Teacher.ToString());
+                        await _userManager.AddToRoleAsync(user, Input.Role.ToString());
+                        break;
+                    }
+                }
+            }
+
+            if (res!= null && !res.Succeeded)
+            {
+                StatusMessage = "Unexpected error when editing user roles.";
+                return RedirectToPage();
             }
 
             await _userManager.UpdateAsync(user);
