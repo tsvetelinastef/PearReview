@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using PearReview.Areas.Identity.Data;
-using System.Security.Claims;
 
 namespace PearReview.Areas.Identity.Services
 {
@@ -45,12 +44,7 @@ namespace PearReview.Areas.Identity.Services
                 return currentUser;
             }
 
-            string? userId = authState.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (userId != null)
-            {
-                currentUser = await userMngr.FindByIdAsync(userId);
-            }
+            currentUser = await userMngr.GetUserAsync(authState.User);
 
             return currentUser;
         }
