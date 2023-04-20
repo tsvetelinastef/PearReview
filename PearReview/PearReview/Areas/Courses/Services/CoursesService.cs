@@ -44,5 +44,12 @@ namespace PearReview.Areas.Courses.Services
             context.Courses.Add(course);
             return await context.SaveChangesAsync();
         }
+
+        public async Task<Course?> GetCourseById(int id)
+        {
+            using AppDbContext context = factory.CreateDbContext();
+
+            return await context.Courses.FirstOrDefaultAsync(c => c.Id == id);
+        }
     }
 }
