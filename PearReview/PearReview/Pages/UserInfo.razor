@@ -1,28 +1,28 @@
 ﻿@page "/UserInfo"
 @attribute [Authorize]
 
-<h3>User Info</h3>
+<h3 class="mb-5">User Info</h3>
 
 @if (user is not null)
 {
-    <h3>@user.Identity?.Name</h3>
-    <div class="m-2 p-2">
+    <h4 class="mb-2 p-2">@user.Identity?.Name</h4>
+    <div class="mb-2 p-2">
         Is Authenticated: @user.Identity?.IsAuthenticated
     </div>
-    <div class="m-2 p-2">
+    <div class="mb-2 p-2">
         Authentication Type: @user.Identity?.AuthenticationType
     </div>
-    <div class="m-2 p-2">
+    <div class="mb-2 p-2">
         Admin Role: @user.IsInRole("Admin")
     </div>
-    <div class="m-2 p-2">
+    <div class="mb-2 p-2">
         Teacher Role: @user.IsInRole("Teacher")
     </div>
-    <div class="m-2 p-2">
+    <div class="mb-2 p-2">
         Student Role: @user.IsInRole("Student")
     </div>
 
-    <div class="m-2 p-2">
+    <div class="mb-2 p-2">
         <h5>Claims</h5>
         @foreach (var claim in user.Claims)
         {
@@ -39,7 +39,7 @@
 }
 else
 {
-    <div class="m-2 p-2">
+    <div class="mb-2 p-2">
         No User Exists
     </div>
 }
