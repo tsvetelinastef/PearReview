@@ -31,6 +31,10 @@
                 </div>
                 @foreach (var role in System.Enum.GetValues(typeof(UserRole)).OfType<UserRole>())
                 {
+                    if (role == UserRole.None)
+                    {
+                        continue;
+                    }
                     <div class="form-check form-check-inline">
                         @Html.RadioButtonFor(model => model.Input.Role, role) @*, new { @class = "form-check-input" })*@
                         <label asp-for="Input.Role" class="form-check-label">@role.ToString()</label>
