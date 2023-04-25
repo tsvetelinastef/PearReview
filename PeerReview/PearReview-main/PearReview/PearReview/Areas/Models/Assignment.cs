@@ -11,3 +11,4 @@ namespace PearReview.Areas.Courses.Models
         public int CourseId { get; set; }
     }
 }
+ 
