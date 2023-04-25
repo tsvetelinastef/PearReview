@@ -1,0 +1,47 @@
+﻿@page "/Courses/Details/{Id:int}"
+@attribute [Authorize]
+
+@using PearReview.Areas.Courses.Data;
+@using PearReview.Areas.Courses.Services;
+
+@inject CoursesService CoursesSvc
+@inject CurrentUserService CurrentUserSvc
+
+@if (course != null)
+{
+    <h3 class="mb-5">@course.Name</h3>
+
+    <p class="text-wrap mb-5" style="width: 600px;">
+        @course.Description
+    </p>
+
+    <p class="mb-5">Starts: @course.StartDate</p>
+}
+else
+{
+    <p class="mb-5">No course</p>
+}
+
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+
+    private Course? course;
+    private AppUser? currentUser;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (currentUser == null)
+        {
+            currentUser = (await CurrentUserSvc.GetCurrentUser())!;
+        }
+
+        if (Id != null)
+        {
+            course = await CoursesSvc.GetCourseById((int)Id);
+        }
+        
+        await base.OnInitializedAsync();
+    }
+
+}
