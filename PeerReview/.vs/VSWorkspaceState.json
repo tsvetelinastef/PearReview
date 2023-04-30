@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\PearReview-main",
+    "\\PearReview-main\\PearReview",
+    "\\PearReview-main\\PearReview\\PearReview",
+    "\\PearReview-main\\PearReview\\PearReview\\Shared",
+    "\\PearReview-main\\PearReview\\PearReview\\wwwroot",
+    "\\PearReview-main\\PearReview\\PearReview\\wwwroot\\css",
+    "\\PearReview-main\\PearReview\\PearReview\\wwwroot\\css\\bootstrap",
+    "\\PearReview-main\\PearReview\\PearReview\\wwwroot\\css\\open-iconic",
+    "\\PearReview-main\\PearReview\\PearReview\\wwwroot\\css\\open-iconic\\font"
+  ],
+  "SelectedNode": "\\PearReview-main\\PearReview\\PearReview\\Areas\\Identity\\Services\\CurrentUserService.cs",
+  "PreviewInSolutionExplorer": false
+}

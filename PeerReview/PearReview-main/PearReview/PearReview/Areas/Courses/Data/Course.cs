@@ -1,4 +1,7 @@
-﻿using PearReview.Areas.Identity.Data;
+﻿using PearReview.Areas.Courses.Models;
+using PearReview.Areas.Identity.Data;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace PearReview.Areas.Courses.Data
@@ -15,12 +18,15 @@ namespace PearReview.Areas.Courses.Data
         public string? Description { get; set; }
 
         [Required]
-        public AppUser Teacher { get; set; }
+        public AppUser? Teacher { get; set; }
 
         [Required]
         public DateTime StartDate { get; set; } = DateTime.Now;
 
         [Required]
         public DateTime CreatedOn { get; set; }
+
+        public ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
+
     }
 }

@@ -1,4 +1,7 @@
-﻿@page "/Courses/Create"
+﻿@using Microsoft.AspNetCore.Components.Forms
+
+
+@page "/Courses/Create"
 @attribute [Authorize(Roles = "Admin,Teacher")]
 
 @using PearReview.Areas.Courses.Data;
@@ -69,7 +72,7 @@ else if (isDone && !isSuccess)
 
 @code {
     private Course course = new Course();
-    private AppUser currentUser;
+    private AppUser? currentUser;
 
     private bool isProcessing = false;
     private bool isDone = false;
