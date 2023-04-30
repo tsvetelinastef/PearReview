@@ -1,0 +1,71 @@
+you, as a teacher must have the student emails in advance
+how you collect those is outside of the scope of the system
+
+Pages:
+Login
+Register
+
+Dashboard - Courses(/Tasks/PendingReviews?)
+Course page - Tasks/PendingReviews
+Task page - Task name, text, file
+Submission page - Submission info, Reviews, Grade and Comment (teacher only page)
+
+Forms:
+New Course form
+Add Students to Course form
+New Task form
+Review Configuration form?
+Grading form?
+
+
+flow:
+as a teacher (user?), you register yourself
+as a teacher/student, on the Dashboard, you can see your Courses
+as a teacher, on the Dashboard, you create a course -->> course name*, summary, detailed description, 
+--course created---
+	student fields - email*, names, fac num, group, specialty, year
+students are added as users/course members and an invite/notification is sent to their email
+students can then access their account though the invite link, set their new password and fill their data
+after that students can access their Dashboard (where they see their courses) and the Course Page 
+
+as a teacher/student, on the Course Page, you can see the Tasks in this Course
+as a teacher, on the Course Page, you add (new) students to the course - manually or by csv file 
+as a teacher, on the Course Page, you add new Tasks to the course - name*, text*, file, due date(, privacy level?, grading criteria)
+
+--as a teacher/student, clicking on a specific Task takes you to the Task Page
+as a teacher/student, on the Task Page, you can see the Task requirements and/or download the Task file
+as a student, on the Task Page, you can submit your solution - text, file
+as a student, on the Task Page, you can see your Submission and can download it (text or file)
+
+as a student, on the Task Page, you can see the Review requirements for this Task and a list of reviews I have to sumbmit
+as a student, on the Task Page, you can submit a Review (text) for another student's submission for the same Task
+as a student, on the Task Page, you can see the final grade and teacher comment for your Submission on this Task
+
+as a teacher, on the Task Page, you can see a list of all student Submissions for this Task and can download them (text or file)
+as a teacher, on the Task Page, you can configure the Review process for this Task - Config form - deadline
+reasonable defaults - anonymous (to the students, but the teacher can see the person assigned??), random, 1 review per person, one week deadline
+
+Lab-05 - 03-04-2023 
+
+--as a teacher, clicking on a specific Submission takes you to the Submission Page
+as a teacher, on the Submission Page, you can read/download the Submission text/file
+as a teacher, on the Submission Page, you can see the Reviews for that Submissions - text (like comments below the Submission)
+
+as a teacher, on the Submission Page, you can give a final grade and teacher comment - float number and text
+as a teacher, on the Submission Page, you can see the final grade and teacher comment of this Submission
+
+- the Submission page is for the teacher only because they operate with a list of submissions and need to select them one by one; The students don't need a Submission page, because they only see their own submission with its reviews, grade and teacher comment
+
+
+Tasks statuses/states:
+
+teacher creates task, submisions are not active yet -> Created
+submissions are active -> ActiveSubmissions
+reviews are active -> ActiveReviews
+teacher grading is active -> ActiveGrading
+task is graded/done/finalized -> Graded/Done
+task is canceled -> Canceled
+
+Online Meeting - 04-04-2023 
+
+Online Meeting - 05-04-2023 

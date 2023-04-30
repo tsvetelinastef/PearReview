@@ -1,41 +1,32 @@
-using PearReview;
-
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-
-using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using PearReview.Areas.Courses.Services;
 using PearReview.Areas.Identity;
 using PearReview.Areas.Identity.Data;
 using PearReview.Areas.Identity.Services;
 using PearReview.Data;
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
 
-var builder = WebAssemblyHostBuilder.CreateDefault(args);
+var builder = WebApplication.CreateBuilder(args);
 
-builder.RootComponents.Add<App>("app");
+// Add services to the container.
+builder.Services.AddRazorPages();
+builder.Services.AddServerSideBlazor();
 
-builder.Services.AddSingleton(
-    new HttpClient
-    {
-        BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
-    });
+builder.Services.AddSingleton<WeatherForecastService>();
 
-string connString = builder.Configuration.GetConnectionString("Default");
-builder.Services.AddDbContext<AppDbContext>(
-    opt =>
-    {
-        opt.UseSqlServer(connString);
-        opt.EnableDetailedErrors();
-        opt.EnableSensitiveDataLogging();
-    });
+string? connString = builder.Configuration.GetConnectionString("Default");
+if (connString != null)
+{
+    builder.Services.AddDbContextFactory<AppDbContext>(
+        opt =>
+        {
+            opt.UseSqlServer(connString);
+            opt.EnableDetailedErrors();
+            opt.EnableSensitiveDataLogging();
+        }
+    );
+}
 
 builder.Services.AddDefaultIdentity<AppUser>(
     options =>
@@ -45,48 +36,56 @@ builder.Services.AddDefaultIdentity<AppUser>(
     })
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>();
+    // Use a custom UserStore that uses the DbContextFactory and creates a new DbContext for reach request.
+    // This avoids getting the following error since the same DbContext instance is not used by mutliple threads:
+    // "InvalidOperationException: A second operation started on this context before a previous operation completed. This is usually caused by different threads using the same instance of DbContext.'
+    //.AddUserStore<AppUserStore>();
 
+//builder.Services.AddScoped<AuthenticationStateProvider, AppAuthStateProvider<AppUser>>();
+
+// Transient = new instance every time one is requested
+// Scoped = new instance per client request but in Blazor there's only one request - the one that establishes the WebSockets connection
+// This means that scope services will live as long as the connection lives which is until a manual reload (manual uri change is a reload)
+// Scoped or Transient?
 builder.Services.AddScoped<CurrentUserService>();
 builder.Services.AddTransient<UsersService>();
 builder.Services.AddTransient<CoursesService>();
-builder.Services.AddSingleton<TokenProvider>();
+builder.Services.AddTransient<ResourcesService>();
 
-
-builder.Services.AddScoped<AuthenticationStateProvider>(
-    sp => sp.GetRequiredService<RevalidatingIdentityAuthenticationStateProvider<AppUser>>());
-builder.Services.AddScoped<NavigationManager>();
-
-builder.Services.Configure<IdentityOptions>(options =>
-{
-    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-    options.Lockout.AllowedForNewUsers = true;
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-    options.Lockout.MaxFailedAccessAttempts = 5;
-});
-
-builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
-    options.TokenLifespan = TimeSpan.FromHours(3));
+builder.Services.AddScoped<TokenProvider>();
 
 var app = builder.Build();
 
-if (app.Services.GetRequiredService<IWebHostEnvironment>().IsDevelopment())
+using (var context = app.Services.CreateScope().ServiceProvider.GetService<AppDbContext>())
 {
-    app.UseWebAssemblyDebugging();
+    if (context != null)
+    {
+        // Creates the db if it doesn't exist and applies the added migrations to it. More migrations are allow after that.
+        context.Database.Migrate();
+
+        // Creates the db if it doesn't exist but does not allow updates with migrations after that.
+        //context.Database.EnsureCreated();
+    }
 }
+
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+
+app.UseStaticFiles();
 
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-if (!app.Services.GetRequiredService<IWebHostEnvironment>().IsDevelopment())
-{
-    app.UseHttpsRedirection();
-    app.UseStaticFiles();
-}
-
 app.MapRazorPages();
-app.MapControllers();
-app.MapFallbackToFile("index.html");
+app.MapBlazorHub();
+app.MapFallbackToPage("/_Host");
 
-
-await app.RunAsync();
+app.Run();
