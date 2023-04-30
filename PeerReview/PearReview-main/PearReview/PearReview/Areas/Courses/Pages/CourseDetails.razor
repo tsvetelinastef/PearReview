@@ -3,19 +3,51 @@
 
 @using PearReview.Areas.Courses.Data;
 @using PearReview.Areas.Courses.Services;
+@using PearReview.Data;
+@using System.Security.Claims;
 
 @inject CoursesService CoursesSvc
 @inject CurrentUserService CurrentUserSvc
+@inject ResourcesService ResourcesSvc
 
 @if (course != null)
 {
     <h3 class="mb-5">@course.Name</h3>
 
-    <p class="text-wrap mb-5" style="width: 600px;">
+    <p class="text-wrap mb-3" style="width: 600px;">
         @course.Description
     </p>
 
-    <p class="mb-5">Starts: @course.StartDate</p>
+    <p class="mb-3">Starts: @course.StartDate</p>
+
+    <p class="mb-3">Resources:</p>
+    <div class="mb-3">
+        <ul>
+            @if (course != null && course.Resources != null)
+            {
+                @foreach (var resource in course.Resources)
+                {
+                    <li>📄 @resource.Filename</li>
+                }
+            }
+        </ul>
+    </div>
+
+    <div class="mb-3">
+        <label for="filesUpload" class="form-label">Upload files</label>
+        <InputFile OnChange="@LoadFiles" multiple id="filesUpload" class="form-control" />
+
+        <div class="mb-3">
+            @foreach (var file in newUploads)
+            {
+                <div class="mb-1">
+                    📄 @file.Filename
+                </div>
+            }
+        </div>
+
+        <button @onclick="SubmitFiles">Submit</button>
+    </div>
 }
 else
 {
@@ -26,22 +58,106 @@ else
     [Parameter]
     public int? Id { get; set; }
 
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthTask { get; set; }
+
+    private List<Resource> newUploads { get; set; } = new List<Resource>();
+
     private Course? course;
-    private AppUser? currentUser;
+    private AppUser currentUser;
+
+    private string pageStoragePath = "CourseDetails/";
+    private string tempStoragePath = "temp/";
 
     protected override async Task OnInitializedAsync()
     {
-        if (currentUser == null)
-        {
-            currentUser = (await CurrentUserSvc.GetCurrentUser())!;
-        }
+        currentUser = (await CurrentUserSvc.GetCurrentUser())!;
 
         if (Id != null)
         {
             course = await CoursesSvc.GetCourseById((int)Id);
         }
-        
+
         await base.OnInitializedAsync();
+    }
+
+    private async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+        if (course == null) return;
+
+        var user = await AuthTask;
+        string? userId = user?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+        {
+            userId = "_unrecognized";
+        }
+
+        string storagePath = $"{Resource.StoragePath}{userId}/{pageStoragePath}{tempStoragePath}";
+        IReadOnlyList<IBrowserFile> files = e.GetMultipleFiles();
+
+        if (files.Count > 0)
+        {
+            Directory.CreateDirectory(storagePath);
+        }
+
+        foreach (var file in files)
+        {
+            Resource? found = newUploads.Find(r => r.Filename == file.Name);
+            if (found != null)
+            {
+                // Overwrite previous version
+                newUploads.Remove(found);
+                // FileMode.Create will overwrite previous file in the file system
+            }
+
+            Resource resource = new Resource
+                {
+                    Filename = file.Name,
+                    Path = storagePath,
+                    Size = file.Size,
+                    UploaderId = currentUser.Id,
+                    CourseId = course.Id,
+                    //Uploader = currentUser,
+                    //Course = course,
+                    CreatedOn = DateTime.Now
+                };
+            newUploads.Add(resource);
+
+            await using FileStream dest = new($"{storagePath}{file.Name}", FileMode.Create);
+            using Stream source = file.OpenReadStream();
+            await source.CopyToAsync(dest);
+        }
+    }
+
+    private async Task SubmitFiles()
+    {
+        string newStoragePath = $"{Resource.StoragePath}{Resource.CoursesPath}{course.Id}/";
+        if (newUploads.Count == 0)
+        {
+            return;
+        }
+
+        Directory.CreateDirectory(newStoragePath);
+
+        foreach (var resource in newUploads)
+        {
+            await using FileStream destination = new($"{newStoragePath}{resource.Filename}", FileMode.Create);
+
+            string sourcePath = $"{resource.Path}{resource.Filename}";
+            using (FileStream source = File.OpenRead(sourcePath))
+            {
+                await source.CopyToAsync(destination);
+            }
+
+            File.Delete(sourcePath);
+        }
+
+        // Update database
+        await ResourcesSvc.AddResources(newUploads);
+        newUploads.Clear();
+
+        // Fetch the newly added Resources as part of the course object
+        course = await CoursesSvc.GetCourseById(course.Id);
     }
 
 }

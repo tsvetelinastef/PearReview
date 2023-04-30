@@ -1,4 +1,5 @@
-﻿@using PearReview.Areas.Identity;
+﻿@using PearReview;
+@using PearReview.Areas.Identity;
 @inject TokenProvider TokenProv
 
 <CascadingAuthenticationState>
@@ -18,11 +19,17 @@
 
 @code {
     [Parameter]
-    public TokenProvider InitialState { get; set; }
+    public TokenProvider? InitialState { get; set; }
 
     protected override Task OnInitializedAsync()
     {
-        TokenProv.XsrfToken = InitialState.XsrfToken;
+        //TokenProv.XsrfToken = InitialState?.XsrfToken;
+        if (InitialState != null)
+        {
+            TokenProv.XsrfToken = InitialState.XsrfToken;
+        }
+
+        //TokenProv.XsrfToken = InitialState?.XsrfToken ?? "default token value";
 
         return base.OnInitializedAsync();
     }

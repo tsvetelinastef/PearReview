@@ -1,8 +1,9 @@
-using Microsoft.AspNetCore.Builder;
+using PearReview;
+
 using Microsoft.AspNetCore.Components.Authorization;
- 
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.AspNetCore.Components;
+
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,7 @@ using PearReview.Data;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -47,9 +49,12 @@ builder.Services.AddDefaultIdentity<AppUser>(
 builder.Services.AddScoped<CurrentUserService>();
 builder.Services.AddTransient<UsersService>();
 builder.Services.AddTransient<CoursesService>();
-builder.Services.AddScoped<TokenProvider>();
+builder.Services.AddSingleton<TokenProvider>();
 
-builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<AppUser>>();
+
+builder.Services.AddScoped<AuthenticationStateProvider>(
+    sp => sp.GetRequiredService<RevalidatingIdentityAuthenticationStateProvider<AppUser>>());
+builder.Services.AddScoped<NavigationManager>();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
@@ -62,26 +67,26 @@ builder.Services.Configure<IdentityOptions>(options =>
 builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
     options.TokenLifespan = TimeSpan.FromHours(3));
 
-// Add using directive for Microsoft.AspNetCore.Components
-builder.Services.AddScoped<NavigationManager>();
-
 var app = builder.Build();
 
-if (app.Services.GetService<IWebHostEnvironment>().IsDevelopment())
+if (app.Services.GetRequiredService<IWebHostEnvironment>().IsDevelopment())
 {
-    //app.UseWebAssemblyDebugging();
+    app.UseWebAssemblyDebugging();
 }
-
-// UseHttpsRedirection and UseStaticFiles are optional
-app.UseHttpsRedirection();
-app.UseStaticFiles();
 
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+if (!app.Services.GetRequiredService<IWebHostEnvironment>().IsDevelopment())
+{
+    app.UseHttpsRedirection();
+    app.UseStaticFiles();
+}
+
 app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
 
-app.RunAsync();
+
+await app.RunAsync();

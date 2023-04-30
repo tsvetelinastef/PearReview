@@ -49,7 +49,10 @@ namespace PearReview.Areas.Courses.Services
         {
             using AppDbContext context = factory.CreateDbContext();
 
-            return await context.Courses.FirstOrDefaultAsync(c => c.Id == id);
+            return await context.Courses
+                .Include(c => c.Teacher)
+                .Include(c => c.Resources)
+                .FirstOrDefaultAsync(c => c.Id == id);
         }
     }
 }
