@@ -1,0 +1,77 @@
+﻿@using PearReview.Areas.Courses.Services
+@using PearReview.Areas.Courses.Models
+
+@using Microsoft.AspNetCore.Components
+@using Microsoft.JSInterop
+@using PearReview.Data
+@inject NavigationManager NavigationManager
+@inject IApiService ApiService
+
+@page "/courses/{CourseId}/assignments"
+
+<h2>Assignments for Course @CourseId</h2>
+
+@if (Assignments == null)
+{
+    <p>Loading...</p>
+}
+else if (Assignments.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var assignment in Assignments)
+            {
+                <tr>
+                    <td>@assignment.Title</td>
+                    <td>@assignment.Status</td>
+                    <td></td>
+                </tr>
+            }
+            <tr>
+                <td colspan="3"><button class="btn btn-primary" @onclick="() => NavigateToAddAssignmentPage(CourseId)">Add Assignment</button></td>
+            </tr>
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No assignments found.</p>
+}
+
+<button @onclick="GoToCoursePage">Go to Course Page</button>
+
+@code {
+    [Parameter] public string? CourseId { get; set; }
+
+    private IEnumerable<Assignment>? Assignments;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (CourseId != null)
+        {
+            Assignments = await ApiService.GetAssignmentsForCourse(CourseId);
+        }
+
+    }
+
+    private void GoToCoursePage()
+    {
+        NavigationManager.NavigateTo($"/courses/{CourseId}");
+    }
+
+    private void NavigateToAddAssignmentPage(string? courseId)
+    {
+        if (courseId != null)
+        {
+            NavigationManager.NavigateTo($"/courses/{courseId}/add-assignment");
+        }
+    }
+
+}

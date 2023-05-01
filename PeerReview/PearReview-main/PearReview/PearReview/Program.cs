@@ -36,10 +36,10 @@ builder.Services.AddDefaultIdentity<AppUser>(
     })
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>();
-    // Use a custom UserStore that uses the DbContextFactory and creates a new DbContext for reach request.
-    // This avoids getting the following error since the same DbContext instance is not used by mutliple threads:
-    // "InvalidOperationException: A second operation started on this context before a previous operation completed. This is usually caused by different threads using the same instance of DbContext.'
-    //.AddUserStore<AppUserStore>();
+// Use a custom UserStore that uses the DbContextFactory and creates a new DbContext for reach request.
+// This avoids getting the following error since the same DbContext instance is not used by mutliple threads:
+// "InvalidOperationException: A second operation started on this context before a previous operation completed. This is usually caused by different threads using the same instance of DbContext.'
+//.AddUserStore<AppUserStore>();
 
 //builder.Services.AddScoped<AuthenticationStateProvider, AppAuthStateProvider<AppUser>>();
 
@@ -53,6 +53,9 @@ builder.Services.AddTransient<CoursesService>();
 builder.Services.AddTransient<ResourcesService>();
 
 builder.Services.AddScoped<TokenProvider>();
+
+// Register ApiService with IApiService
+builder.Services.AddScoped<IApiService, ApiService>();
 
 var app = builder.Build();
 
@@ -86,6 +89,3 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 app.MapBlazorHub();
-app.MapFallbackToPage("/_Host");
-
-app.Run();
